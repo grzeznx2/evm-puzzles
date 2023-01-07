@@ -115,3 +115,61 @@ STOP: Halts Execution
 ```
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x1234ABCD&codeType=Bytecode&code=%273656FDFD5B00%27_&fork=merge
+## Puzzle 4
+```
+00      34      CALLVALUE
+01      38      CODESIZE
+02      18      XOR
+03      56      JUMP
+04      FD      REVERT
+05      FD      REVERT
+06      FD      REVERT
+07      FD      REVERT
+08      FD      REVERT
+09      FD      REVERT
+0A      5B      JUMPDEST
+0B      00      STOP
+```
+### Relevant OPCODES
+```
+CALLVALUE: Get deposited value by the instruction/transaction responsible for this execution
+CALLDATASIZE: Get size of input data in current environment
+COR: Bitwise XOR operation
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+CALLVALUE pushes some X value to the stack. Next, CODESIZE pushes 12 to the stack. XOR performs bitwise operation between CODESIZE and CALLVALUE and we know that the result must be equal to 10, since this is the JUMPDEST.
+
+XOR explanation:
+
+In the context of computing, the XOR operator performs a logical operation called exclusive or on two operands. It returns a value of true if either of the operands is true, but not both.
+```
+1 1 0 0 = 12 in binary
+1 0 1 0 = 10 in binary
+| | | |
+| | | |
+v v v v
+0 1 1 0 = 6 in binary
+
+Operand 1 (CODESIZE = 12) | OPERAND 2 (CODEVALUE = ?) | XOR = 10
+1                          0                            1
+1                          1                            0
+0                          1                            1
+0                          0                            0
+```
+
+
+```
+Execution Order:
+CALLVALUE: Pushes 6 to the stack
+CALLDATASIZE: Pushes 12 to the stack
+XOR: Removes 12 and 6 from the stack, performs XOR(12,6) and pushes 10 to the stack
+JUMP: Removes 10 from the stack and jumps to the 10th position of our code
+JUMPDEST: Marks the jump destination
+STOP: Halts Execution
+```
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=6&unit=Wei&callData=&codeType=Bytecode&code=%2734381856FDFDFDFDFDFD5B00%27_&fork=merge
