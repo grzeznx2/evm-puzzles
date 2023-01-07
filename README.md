@@ -49,3 +49,40 @@ STOP: Halts Execution
 ```
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=8&unit=Wei&callData=&codeType=Bytecode&code='3456FDFDFDFDFDFD5B00'_
+## Puzzle 2
+```
+00      34      CALLVALUE
+01      38      CODESIZE
+02      03      SUB
+03      56      JUMP
+04      FD      REVERT
+05      FD      REVERT
+06      5B      JUMPDEST
+07      00      STOP
+08      FD      REVERT
+09      FD      REVERT
+```
+### Relevant OPCODES
+```
+CALLVALUE: Get deposited value by the instruction/transaction responsible for this execution
+CODESIZE: Get size of code running in current environment
+SUB: Subtraction operation
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+Similar to the Puzzle 1, the goal is to JUMP to the JUMPDEST omitting all the REVERT opcodes. So we have to determine the value at the top of the stack when JUMP command is executed. In our case this value is the result of the SUB command, which subracts the value at position 1 from the value at position 0 on the stack. The value at position 0 is equal to the bytecode size of our contract (which is basically the number of OPCODES x 1 byte = 10 bytes). The last thing we have to do is to calculate the CALLVALUE (value at position 1), such that 10 - CALLVALUE = 6, which gives us 4.
+
+```
+Execution Order:
+CALLVALUE: Pushes 4 to the stack
+CODESIZE: Pushes 10 to the stack
+SUB: Removes 10 and 4 from the stack, pushes 10-4=6 to the stack
+JUMP: Removes 6 from the stack and jumps to the 6th position of our code
+JUMPDEST: Marks the jump destination
+STOP: Halts Execution
+```
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=4&unit=Wei&callData=&codeType=Bytecode&code=%2734380356FDFD5B00FDFD%27_&fork=merge
