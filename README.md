@@ -134,7 +134,7 @@ https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x1234ABCD&codeTy
 ```
 CALLVALUE: Get deposited value by the instruction/transaction responsible for this execution
 CALLDATASIZE: Get size of input data in current environment
-COR: Bitwise XOR operation
+XOR: Bitwise XOR operation
 JUMP: Alter the program counter
 JUMPDEST: Mark a valid destination for jumps
 REVERT: Halt execution reverting state changes but returning data and remaining gas
@@ -173,3 +173,57 @@ STOP: Halts Execution
 ```
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=6&unit=Wei&callData=&codeType=Bytecode&code=%2734381856FDFDFDFDFDFD5B00%27_&fork=merge
+
+## Puzzle 5
+```
+00      34          CALLVALUE
+01      80          DUP1
+02      02          MUL
+03      610100      PUSH2 0100
+06      14          EQ
+07      600C        PUSH1 0C
+09      57          JUMPI
+0A      FD          REVERT
+0B      FD          REVERT
+0C      5B          JUMPDEST
+0D      00          STOP
+0E      FD          REVERT
+0F      FD          REVERT
+```
+### Relevant OPCODES
+```
+CALLDATASIZE: Get size of input data in current environment
+DUP1: Duplicate 1st stack item
+MUL: Multiplication operation
+PUSH1: Place 1 byte item on stack
+PUSH2: Place 2 byte item on stack
+EQ: Equality comparison
+JUMPI: Conditionally alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+```
+CALLDATA pushes some X to the stack at position 0
+DUP1 pushes the same X to the stack at position 1
+MUL removes items from position 0 and 1 and pushes result of multiplication to the stack: X * X
+PUSH2 0100 pushes 0100 (256) to the stack
+EQ removes items from positon 0 and 1 and pushes result of comparison to the stack: 1 if X * X === 0100 or 0 if X * X !== 0
+PUSH1 0C pushes 0x0c (12) to the stack
+JUMPI removes items from position 0 and 1 and jumps to 0x0c (12) if X*X === 0100 (256)
+Now we know that X = 16, because 16 * 16 = 256
+```
+
+```
+Execution Order:
+CALLDATA: pushes 16 to the stack
+DUP1: duplicates 16 and pushes it to the stack
+MUL: removes 16 and 16 from the stack and pushes 16*16 (0100) to the stack
+PUSH2 0100: pushes 0100 (256) to the stack
+EQ: removes 0100 and 0100 from the stack and pushes 1 to the stack (because 0100 === 0100)
+PUSH1 0C: pushes 0x0c (12) to the stack
+JUMPI: removes 1 and 0x0c from the stack and jumps to 0x0c (12) position
+```
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=16&unit=Wei&callData=&codeType=Bytecode&code=%2734800261010014600C57FDFD5B00FDFD%27_&fork=merge
