@@ -86,3 +86,32 @@ STOP: Halts Execution
 ```
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=4&unit=Wei&callData=&codeType=Bytecode&code=%2734380356FDFD5B00FDFD%27_&fork=merge
+## Puzzle 3
+```
+00      36      CALLDATASIZE
+01      56      JUMP
+02      FD      REVERT
+03      FD      REVERT
+04      5B      JUMPDEST
+05      00      STOP
+```
+### Relevant OPCODES
+```
+CALLDATASIZE: Get size of input data in current environment
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+The goal is to JUMP to the JUMPDEST omitting all the REVERT opcodes. JUMP takes the first value from the stack and that's the destination to jump to. In our case there's only one value on the stack determined by CALLDATASIZE (which is equal to the byte size of the calldata). In this case the mentioned value must be equal to 4 (for example 0x1234ABCDE), because JUMPDEST = 4.
+
+```
+Execution Order:
+CALLDATASIZE: Pushes 4 to the stack
+JUMP: Removes 4 from the stack and jumps to the 4th position of our code
+JUMPDEST: Marks the jump destination
+STOP: Halts Execution
+```
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x1234ABCD&codeType=Bytecode&code=%273656FDFD5B00%27_&fork=merge
