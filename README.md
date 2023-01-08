@@ -256,3 +256,131 @@ We need to include in the calldata a value that will allow us to go to position 
 
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x000000000000000000000000000000000000000000000000000000000000000A&codeType=Bytecode&code=%2760003556FDFDFDFDFDFD5B00%27_&fork=merge
+
+## Puzzle 7
+```
+00      36        CALLDATASIZE
+01      6000      PUSH1 00
+03      80        DUP1
+04      37        CALLDATACOPY
+05      36        CALLDATASIZE
+06      6000      PUSH1 00
+08      6000      PUSH1 00
+0A      F0        CREATE
+0B      3B        EXTCODESIZE
+0C      6001      PUSH1 01
+0E      14        EQ
+0F      6013      PUSH1 13
+11      57        JUMPI
+12      FD        REVERT
+13      5B        JUMPDEST
+14      00        STOP
+```
+### Relevant OPCODES
+```
+CALLDATASIZE: Get size of input data in current environment
+CALLDATACOPY: Copy input data in current environment to memory
+PUSH1: Place 1 byte item on stack
+DUP1: Duplicate 1st stack item
+CREATE: Create a new account with associated code
+EXTCODESIZE: Get size of an account’s code
+EQ: Equality comparison
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+Soon
+
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x600060005360016000F3&codeType=Bytecode&code=%2736%7E0803736%7E0%7E0F03B%7E114601357FD5B00%27%7E600%01%7E_&fork=merge
+
+## Puzzle 8
+```
+00      36        CALLDATASIZE
+01      6000      PUSH1 00
+03      80        DUP1
+04      37        CALLDATACOPY
+05      36        CALLDATASIZE
+06      6000      PUSH1 00
+08      6000      PUSH1 00
+0A      F0        CREATE
+0B      6000      PUSH1 00
+0D      80        DUP1
+0E      80        DUP1
+0F      80        DUP1
+10      80        DUP1
+11      94        SWAP5
+12      5A        GAS
+13      F1        CALL
+14      6000      PUSH1 00
+16      14        EQ
+17      601B      PUSH1 1B
+19      57        JUMPI
+1A      FD        REVERT
+1B      5B        JUMPDEST
+1C      00        STOP
+```
+### Relevant OPCODES
+```
+CALLDATASIZE: Get size of input data in current environment
+CALLDATACOPY: Copy input data in current environment to memory
+PUSH1: Place 1 byte item on stack
+DUP1: Duplicate 1st stack item
+SWAP5: Exchange 1st and 6th stack items
+GAS: Get the amount of available gas, including the corresponding reduction for the cost of this instruction
+CALL: Message-call into an account
+CREATE: Create a new account with associated code
+EXTCODESIZE: Get size of an account’s code
+EQ: Equality comparison
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+Soon
+
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x60FD60005360016000F3&codeType=Bytecode&code=%2736600080373660006000F0600080808080945AF1600014601B57FD5B00%27_&fork=merge
+
+## Puzzle 9
+```
+00      36        CALLDATASIZE
+01      6003      PUSH1 03
+03      10        LT
+04      6009      PUSH1 09
+06      57        JUMPI
+07      FD        REVERT
+08      FD        REVERT
+09      5B        JUMPDEST
+0A      34        CALLVALUE
+0B      36        CALLDATASIZE
+0C      02        MUL
+0D      6008      PUSH1 08
+0F      14        EQ
+10      6014      PUSH1 14
+12      57        JUMPI
+13      FD        REVERT
+14      5B        JUMPDEST
+15      00        STOP
+```
+### Relevant OPCODES
+```
+CALLDATASIZE: Get size of input data in current environment
+PUSH1: Place 1 byte item on stack
+DUP1: Duplicate 1st stack item
+MUL: Multiplication operation
+LT: Less-than comparison
+EQ: Equality comparison
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+Soon
+
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=1&unit=Wei&callData=0xFFFFFFFFFFFFFFFF&codeType=Bytecode&code=%2736600310600957FDFD5B343602600814601457FD5B00%27_&fork=merge
