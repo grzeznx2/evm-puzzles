@@ -227,3 +227,32 @@ JUMPI: removes 1 and 0x0c from the stack and jumps to 0x0c (12) position
 ```
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=16&unit=Wei&callData=&codeType=Bytecode&code=%2734800261010014600C57FDFD5B00FDFD%27_&fork=merge
+
+## Puzzle 6
+```
+00      6000      PUSH1 00
+02      35        CALLDATALOAD
+03      56        JUMP
+04      FD        REVERT
+05      FD        REVERT
+06      FD        REVERT
+07      FD        REVERT
+08      FD        REVERT
+09      FD        REVERT
+0A      5B        JUMPDEST
+0B      00        STOP
+```
+### Relevant OPCODES
+```
+PUSH1: Place 1 byte item on stack
+CALLDATALOAD: Get input data of current environment
+JUMP: Alter the program counter
+JUMPDEST: Mark a valid destination for jumps
+REVERT: Halt execution reverting state changes but returning data and remaining gas
+STOP: Halts execution
+```
+### Solution
+We need to include in the calldata a value that will allow us to go to position 0A in the calldata when we use a byte offset index of 0 in the CALLDATA. The solution is in our case 0x000000000000000000000000000000000000000000000000000000000000000A.
+
+### Solution in the EVM Playground
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x000000000000000000000000000000000000000000000000000000000000000A&codeType=Bytecode&code=%2760003556FDFDFDFDFDFD5B00%27_&fork=merge
