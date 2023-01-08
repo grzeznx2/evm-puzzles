@@ -290,8 +290,6 @@ JUMPDEST: Mark a valid destination for jumps
 REVERT: Halt execution reverting state changes but returning data and remaining gas
 STOP: Halts execution
 ```
-### Solution
-Soon
 
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x600060005360016000F3&codeType=Bytecode&code=%2736%7E0803736%7E0%7E0F03B%7E114601357FD5B00%27%7E600%01%7E_&fork=merge
@@ -339,8 +337,6 @@ JUMPDEST: Mark a valid destination for jumps
 REVERT: Halt execution reverting state changes but returning data and remaining gas
 STOP: Halts execution
 ```
-### Solution
-Soon
 
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x60FD60005360016000F3&codeType=Bytecode&code=%2736600080373660006000F0600080808080945AF1600014601B57FD5B00%27_&fork=merge
@@ -379,8 +375,6 @@ JUMPDEST: Mark a valid destination for jumps
 REVERT: Halt execution reverting state changes but returning data and remaining gas
 STOP: Halts execution
 ```
-### Solution
-Soon
 
 ### Solution in the EVM Playground
 https://www.evm.codes/playground?callValue=1&unit=Wei&callData=0xFFFFFFFFFFFFFFFF&codeType=Bytecode&code=%2736600310600957FDFD5B343602600814601457FD5B00%27_&fork=merge
