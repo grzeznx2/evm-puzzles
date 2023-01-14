@@ -393,8 +393,98 @@ REVERT: Halt execution reverting state changes but returning data and remaining 
 STOP: Halts execution
 ```
 
+```Execution Order:
+Execution Order:
+CALLDATASIZE: pushes the size X of calldata to the tack
+PUSH1 00: pushes 0 to the stack
+DUP1: Duplicate 1st stack item (0 in our case).
+
+Currently stack looks like this:
+0
+0
+X
+
+CALLDATACOPY: removes 3 items from the stack and use them as arguments for copying to the memory:
+(0: byte offset in memory - where to copy the data, 0: byte offset in calldata - where to copy the data from, X: byte size from calldata - how many bytes to copy)
+Here all the data from calldata is being copied to the memory.
+After this operation stack is empty.
+
+CALLDATASIZE: pushes the size X of calldata to the stack
+PUSH1 00: pushes 0 to the stack
+PUSH1 00: pushes 0 to the stack
+
+Currently stack looks like this:
+0
+0
+X
+
+CREATE: removes 3 items form the stack and use them and as arguments for creating new account:
+(0: amount of WEI sent to the new account, 0: byte offset in memory - where to copy the data needed to create new account from, X: byte size from memory - how many bytes to copy) and pushes 1 item (newly created account) to the stack.
+
+Currently stack looks like this:
+Y (20 bytes long address)
+
+PUSH1 00: pushes 0 to the stack
+DUP1: Duplicate 1st stack item (0 in our case).
+DUP1: Duplicate 1st stack item (0 in our case).
+DUP1: Duplicate 1st stack item (0 in our case).
+DUP1: Duplicate 1st stack item (0 in our case).
+
+
+Currently stack looks like this:
+0
+0
+0
+0
+0
+Y (20 bytes long address)
+
+SWAP5: swaps 0th and 5th item:
+
+Currently stack looks like this:
+Y (20 bytes long address)
+0
+0
+0
+0
+0
+
+GAS: pushes to the stack the remaining gas after this operation
+
+Currently stack looks like this:
+Z: remaining gas
+Y (20 bytes long address)
+0
+0
+0
+0
+0
+
+CALL: Creates a new sub context and execute the code of the given account using 7 items from stack as arguments:
+Z: amount of gas to send to the sub context to execute. The gas that is not used by the sub context is returned to this one.
+Y: the account which context to execute.
+0: value in wei to send to the account.
+0: byte offset in the memory in bytes, the calldata of the sub context.
+0: byte size to copy (size of the calldata).
+0: byte offset in the memory in bytes, where to store the return data of the sub context.
+0: byte size to copy (size of the return data).
+
+If the call to the external account was successfull, CALL pushes 1 to the stack, otherwise 0.
+
+Currently stack looks like this:
+0 or 1: result of the CALL opcode
+
+PUSH1 00: pushes 0 to the stack
+EQ: removes 2 items, pushes 1 if they are equal, 0 otherwise. In our case, to make the next JUMP successfull it has to return 1, which means that the result of CALL opcode must be 0 (so the CALL must fail)
+
+Now the question is what code can we send in order to make the CALL fail? We know that the RETURN value of the bytecode that is run on deployment becomes the bytecode for the newly created contract. That's why we need to pass in calldata with a bytecode sequence such that the return value of the sequence causes a REVERT when run.
+Such example is 60026000526001601ff3 (returns 02 - MUL). When MUL is being called there are no items on the stack, this way the call will be reverted.
+
+
+```
+
 ### Solution in the EVM Playground
-https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x60FD60005360016000F3&codeType=Bytecode&code=%2736600080373660006000F0600080808080945AF1600014601B57FD5B00%27_&fork=merge
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x60FD60025360016000F3&codeType=Bytecode&code=%2736600080373660006000F0600080808080945AF1600014601B57FD5B00%27_&fork=merge
 
 ## Puzzle 9
 ```
