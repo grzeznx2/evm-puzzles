@@ -291,8 +291,63 @@ REVERT: Halt execution reverting state changes but returning data and remaining 
 STOP: Halts execution
 ```
 
+```
+Execution Order:
+CALLDATASIZE: pushes the size X of calldata to the tack
+PUSH1 00: pushes 0 to the stack
+DUP1: Duplicate 1st stack item (0 in our case).
+
+Currently stack looks like this:
+0
+0
+X
+
+CALLDATACOPY: removes 3 items from the stack and use them as arguments for copying to the memory:
+(0: byte offset in memory - where to copy the data, 0: byte offset in calldata - where to copy the data from, X: byte size from calldata - how many bytes to copy)
+Here all the data from calldata is being copied to the memory.
+After this operation stack is empty.
+
+CALLDATASIZE: pushes the size X of calldata to the stack
+PUSH1 00: pushes 0 to the stack
+PUSH1 00: pushes 0 to the stack
+
+Currently stack looks like this:
+0
+0
+X
+
+CREATE: removes 3 items form the stack and use them and as arguments for creating new account:
+(0: amount of WEI sent to the new account, 0: byte offset in memory - where to copy the data needed to create new account from, X: byte size from memory - how many bytes to copy) and pushes 1 item (newly created account) to the stack.
+
+Currently stack looks like this:
+Y (20 bytes long address)
+
+EXTCODESIZE: removes 1 item from the stack (account address) and pushes byte size of the accounts code
+
+Currently stack looks like this:
+Y': (code size of Y account)
+
+PUSH1 01: pushes 1 to the stack
+
+Currently stack looks like this:
+1
+Y': (code size of Y account)
+
+EQ: removes 2 bytes from the stack, compares them and pushes result of the comparison to the stack
+PUSH1 13: pushes 13 to the stack
+
+Currently stack looks like this:
+13
+0 or 1: result of the EQ operation
+
+JUMPI: removes two items from the stack and jumps to position 13 if second item = 1. So in order to make proper JUMP, the result of EQ operation must be equal to 1, which means that the Y' must also be equal to 0.
+The example of such code is: 600160005360016000F3
+JUMPDEST: destination of the jump
+
+```
+
 ### Solution in the EVM Playground
-https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x600060005360016000F3&codeType=Bytecode&code=%2736%7E0803736%7E0%7E0F03B%7E114601357FD5B00%27%7E600%01%7E_&fork=merge
+https://www.evm.codes/playground?callValue=0&unit=Wei&callData=0x600160005360016000F3&codeType=Bytecode&code=%2736%7E0803736%7E0%7E0F03B%7E114601357FD5B00%27%7E600%01%7E_&fork=merge
 
 ## Puzzle 8
 ```
