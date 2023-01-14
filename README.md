@@ -395,7 +395,7 @@ STOP: Halts execution
 
 ```Execution Order:
 Execution Order:
-CALLDATASIZE: pushes the size X of calldata to the tack
+CALLDATASIZE: pushes the size X of calldata to the stack
 PUSH1 00: pushes 0 to the stack
 DUP1: Duplicate 1st stack item (0 in our case).
 
@@ -521,5 +521,30 @@ REVERT: Halt execution reverting state changes but returning data and remaining 
 STOP: Halts execution
 ```
 
+```
+Execution Order:
+CALLDATASIZE: pushes the size X of calldata to the stack
+PUSH1 03: pushes 3 to the stack
+LT: removes 2 items from the stack, pushes 1 if first item < second item, 0 otherwise
+PUSH1 09: pushes 9 to the stack
+
+Currently stack looks like this:
+0 or 1
+9
+
+JUMPI: Jumps to the position 9 if first item = 1. So now we know, that the result of LT must be equal to 1, which means that CALLDATASIZE must be greater than 3.
+JUMPDEST: Jump destination
+CALLVALUE: pushes value Y (call value) to the stack
+CALLDATASIZE: pushes the size X of calldata to the stack
+MUL: removes 2 items from the stack and pushes result of multiplication
+
+Currently stack looks like this:
+X * Y: result of multiplication
+
+Execution the next opcodes we see that the result of the above multiplication must be equal to 8. We also know that calldatasize must be greater than 3. 
+In order to solve the puzzle we can send 0x00000000 (4 bytes) as the calldata and 2 as the callvalue or 0x0000000000000000 (8 bytes) as the calldata and 1 as the callvalue
+
+``
+
 ### Solution in the EVM Playground
-https://www.evm.codes/playground?callValue=1&unit=Wei&callData=0xFFFFFFFFFFFFFFFF&codeType=Bytecode&code=%2736600310600957FDFD5B343602600814601457FD5B00%27_&fork=merge
+https://www.evm.codes/playground?callValue=1&unit=Wei&callData=0x00000000&codeType=Bytecode&code=%2736600310600957FDFD5B343602600814601457FD5B00%27_&fork=merge
